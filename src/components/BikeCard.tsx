@@ -1,13 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import Icon from "@mdi/react";
 import { mdiMotorbike } from "@mdi/js";
 import { BikeType } from "utils/";
 import { CalendarDateRangePicker } from "./CalendarDateRangePicker";
 import ErrorBoundary from "./ErrorBoundary";
+import { useAuth } from "hooks/";
+import { addReservation } from "api/";
+import { Alert } from "./Alert";
 
 export const BikeCard: React.FC<{ bike: BikeType }> = ({ bike }) => {
-    const { model, color, location, available } = bike;
-    const [calenVisible, setCalendarVisible] = React.useState(false);
+    const { auth } = useAuth();
+    const { model, color, location } = bike;
+    const [calenVisible, setCalendarVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState("");
+
+    const reserveBike = (endDate: Date, startDate: Date) => {
+        setLoading(true);
+        setSuccess(false);
+        addReservation(bike, startDate.toUTCString(), endDate.toUTCString(), auth!)
+            .then(() => {
+                setSuccess(true);
+                setTimeout(() => {
+                    setSuccess(false);
+                }, 3000);
+            })
+            .catch((e) => setError(e))
+            .finally(() => {
+                setLoading(false);
+                setCalendarVisible(false);
+            });
+    };
 
     return (
         <div className="box rounded overflow-hidden shadow-md border">
@@ -35,26 +59,35 @@ export const BikeCard: React.FC<{ bike: BikeType }> = ({ bike }) => {
             </div>
 
             <div className="bg-gray-100 p-2 mt-3 flex">
-                {available ? (
+                <div className="">
+                    {success && <Alert message="Reservation complete" type="success" />}
+                    <Alert message={error} />
+                </div>
+                <div className="flex ml-auto">
                     <button
                         className=" ml-auto block text-white bg-black hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-xs px-2 py-1 text-center"
                         type="button"
+                        onClick={() => setCalendarVisible(true)}
                     >
                         Book
                     </button>
-                ) : (
-                    <span className="ml-auto text-xs text-red-400">Not available for rental</span>
-                )}
-                <button
-                    className=" ml-4 block text-black hover:text-white bg-yellow-400 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-800 font-medium rounded-lg text-xs px-2 py-1 text-center"
-                    type="button"
-                >
-                    Rate
-                </button>
+
+                    <button
+                        className=" ml-4 block text-black hover:text-white bg-yellow-400 hover:bg-gray-600 focus:ring-1 focus:outline-none focus:ring-gray-800 font-medium rounded-lg text-xs px-2 py-1 text-center"
+                        type="button"
+                    >
+                        Rate
+                    </button>
+                </div>
             </div>
 
             <ErrorBoundary>
-                <CalendarDateRangePicker visible={calenVisible} hideCalendar={() => setCalendarVisible(false)} />
+                <CalendarDateRangePicker
+                    visible={calenVisible}
+                    hideCalendar={() => setCalendarVisible(false)}
+                    loading={loading}
+                    validate={reserveBike}
+                />
             </ErrorBoundary>
         </div>
     );

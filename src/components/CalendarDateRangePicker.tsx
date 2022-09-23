@@ -3,13 +3,16 @@ import { DateRangePicker, RangeKeyDict } from "react-date-range";
 import { addDays } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import { Loader } from "./Loader";
 
 interface Props {
     visible: boolean;
     hideCalendar: () => void;
+    loading?: boolean;
+    validate: (startDate: Date, endDate: Date) => void;
 }
 
-export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar }) => {
+export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar, validate, loading = false }) => {
     const calendarRef = useRef<HTMLDivElement>(null);
     const [selectionRange, setSelectionRange] = React.useState({
         startDate: new Date(),
@@ -17,8 +20,6 @@ export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar }) =>
         key: "selection",
     });
     const handleSelect = (ranges: RangeKeyDict) => {
-        console.log(ranges);
-
         const {
             selection: { startDate, endDate },
         } = ranges;
@@ -30,14 +31,18 @@ export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar }) =>
         });
     };
 
+    const validateBooking = () => {
+        validate(selectionRange.startDate, selectionRange.endDate);
+    };
+
     // Hide calendar on outside click
     const hideOnClickOutside = useCallback(
         (e: MouseEvent) => {
             if (calendarRef.current && !calendarRef.current.contains(e.target as HTMLElement)) {
-                hideCalendar();
+                if (!loading) hideCalendar();
             }
         },
-        [hideCalendar]
+        [hideCalendar, loading]
     );
 
     useEffect(() => {
@@ -77,9 +82,20 @@ export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar }) =>
                                 </div>
                             </div>
                         </div>
+                        <Loader loading={loading} />
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button
+                                onClick={validateBooking}
                                 type="button"
+                                disabled={loading}
+                                className="inline-flex w-full justify-center rounded-md border border-transparent hover:text-white bg-yellow-400 px-4 py-2 text-base font-medium text-dark shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                                Validate
+                            </button>
+                            <button
+                                onClick={hideCalendar}
+                                type="button"
+                                disabled={loading}
                                 className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                             >
                                 Cancel

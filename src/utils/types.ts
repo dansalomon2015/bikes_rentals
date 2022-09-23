@@ -3,10 +3,10 @@ export type ROLE = "USER_ROLE" | "ADMIN_ROLE";
 export type AuthUserType = {
     user: User;
     roles: ROLE[];
-    username?: string;
+    username: string;
     timestamp?: number;
     email: string;
-    Location: string;
+    location: string;
 };
 export enum COLORS {
     BLUE = "BLUE",
@@ -52,11 +52,30 @@ export type BikeType = {
     color: COLORS;
     location: string;
     available: boolean;
+    createdBy?: string;
 };
 
 export type LocationType = {
     id: string;
     attributes: {
         name: string;
+    };
+};
+
+export type ReservationType = {
+    id?: string;
+    endDate: string;
+    bikeId: string;
+    userId: string;
+    startDate: string;
+    timestamp: number;
+    bike: {
+        location: string;
+        model: string;
+        color: COLORS;
+    };
+    user: {
+        email: string;
+        username: string;
     };
 };

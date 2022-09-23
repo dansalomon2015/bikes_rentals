@@ -7,7 +7,7 @@ import { isAdmin } from "utils/";
 
 export default function SideBar() {
     const { auth } = useAuth();
-    const { bikes } = useStore();
+    const { bikes } = useStore({});
     const location = useLocation();
 
     const isActive = useCallback(

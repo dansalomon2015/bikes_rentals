@@ -8,3 +8,4 @@ export * from "./BikeForm";
 export * from "./BikesTableLayout";
 export * from "./NewUserForm";
 export * from "./BikesList";
+export * from "./Loader";

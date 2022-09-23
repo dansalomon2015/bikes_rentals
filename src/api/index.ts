@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { fireAuth, fireDB } from "libs/";
-import { BikeType, LocationType, ROLE } from "utils/";
+import { AuthUserType, BikeType, LocationType, ReservationType, ROLE } from "utils/";
 
 export const signUp = (email: string, password: string) => {
     return createUserWithEmailAndPassword(fireAuth, email, password);
@@ -92,3 +92,31 @@ const deleteDocument = (collectionName: string, docId: string) => {
 };
 
 export const deleteBikes = (bikeId: string) => deleteDocument("bikes", bikeId);
+
+export const addReservation = (bike: BikeType, startDate: string, endDate: string, by: AuthUserType) => {
+    delete bike.createdBy;
+    const {
+        location,
+        email,
+        username,
+        user: { uid },
+    } = by;
+    const { color, model, id } = bike;
+    const resa: ReservationType = {
+        endDate: endDate,
+        bikeId: id!,
+        userId: uid,
+        startDate: startDate,
+        timestamp: new Date().getTime(),
+        bike: {
+            location: bike.location,
+            model,
+            color,
+        },
+        user: {
+            email,
+            username,
+        },
+    };
+    return addDoc(collection(fireDB, "reservations"), resa);
+};

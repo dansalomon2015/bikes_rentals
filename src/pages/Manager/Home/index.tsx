@@ -6,7 +6,7 @@ import { BikeType } from "utils/";
 
 export const ManagerHome = () => {
     const { auth } = useAuth();
-    const { bikes, loadingBikes } = useStore();
+    const { bikes, loadingBikes } = useStore({});
     const [bikeFormVisible, setBikeFormVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
