@@ -7,7 +7,7 @@ import { isAdmin } from "utils/";
 
 export default function SideBar() {
     const { auth } = useAuth();
-    const { bikes } = useStore({});
+    const { bikes, reservations } = useStore({});
     const location = useLocation();
 
     const isActive = useCallback(
@@ -17,7 +17,7 @@ export default function SideBar() {
         [location]
     );
 
-    let homePath = isAdmin(auth) ? "/home/admin" : "/home/user";
+    let homePath = isAdmin(auth) ? "/admin" : "/home";
 
     return (
         <aside className="w-64 h-screen" aria-label="Sidebar">
@@ -40,7 +40,7 @@ export default function SideBar() {
                             to="/resa"
                             title="Reservations"
                             active={isActive("/resa")}
-                            content={<Badge count={3} />}
+                            content={<Badge count={reservations.length} />}
                         />
                     </li>
                     {isAdmin(auth) && (

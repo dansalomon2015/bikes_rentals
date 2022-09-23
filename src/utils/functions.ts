@@ -17,3 +17,27 @@ export const isAdmin = (auth: AuthUserType | undefined) => {
     if (!auth.user) return false;
     return auth.roles.includes(ROLES.Admin);
 };
+
+export const getTime = (date: Date): number => new Date(date.setHours(0)).getTime();
+
+export const isDateBetween = (endDate: Date, startDate: Date, date: Date) => {
+    // console.log("---------------");
+    // console.log(startDate, getTime(startDate) <= getTime(date));
+    // console.log(date);
+    // console.log("End Date ", endDate, getTime(date) >= getTime(date));
+    // console.log("---------------");
+
+    return getTime(endDate) >= getTime(date) && getTime(startDate) <= getTime(date);
+};
+
+export const dateToLocale = (d: string | number) => {
+    if (!d) return null;
+    var date = new Date(d);
+    return (
+        date.toLocaleDateString("en-US", { day: "2-digit" }) +
+        " " +
+        date.toLocaleDateString("en-US", { month: "long" }) +
+        " " +
+        date.toLocaleDateString("en-US", { year: "numeric" })
+    );
+};

@@ -9,7 +9,7 @@ interface Props {
     visible: boolean;
     hideCalendar: () => void;
     loading?: boolean;
-    validate: (startDate: Date, endDate: Date) => void;
+    validate: (range: { startDate: Date; endDate: Date }) => void;
 }
 
 export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar, validate, loading = false }) => {
@@ -32,7 +32,7 @@ export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar, vali
     };
 
     const validateBooking = () => {
-        validate(selectionRange.startDate, selectionRange.endDate);
+        validate({ startDate: selectionRange.startDate, endDate: selectionRange.endDate });
     };
 
     // Hide calendar on outside click
@@ -82,7 +82,9 @@ export const CalendarDateRangePicker: FC<Props> = ({ visible, hideCalendar, vali
                                 </div>
                             </div>
                         </div>
-                        <Loader loading={loading} />
+                        <div className="px-2 flex justify-center">
+                            <Loader loading={loading} />
+                        </div>
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button
                                 onClick={validateBooking}

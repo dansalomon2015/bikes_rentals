@@ -9,3 +9,4 @@ export * from "./BikesTableLayout";
 export * from "./NewUserForm";
 export * from "./BikesList";
 export * from "./Loader";
+export * from "./ReservationList";

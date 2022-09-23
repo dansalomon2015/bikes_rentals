@@ -55,9 +55,9 @@ export const Login = () => {
 
     if (auth?.user) {
         if (auth.roles.includes(ROLES.Admin)) {
-            return <Navigate to={"/home/admin"} />;
+            return <Navigate to={"/admin"} />;
         } else {
-            return <Navigate to={"/home/user"} />;
+            return <Navigate to={"/home"} />;
         }
     }
 

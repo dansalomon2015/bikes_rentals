@@ -93,10 +93,11 @@ const deleteDocument = (collectionName: string, docId: string) => {
 
 export const deleteBikes = (bikeId: string) => deleteDocument("bikes", bikeId);
 
+export const deleteReservation = (resaId: string) => deleteDocument("reservations", resaId);
+
 export const addReservation = (bike: BikeType, startDate: string, endDate: string, by: AuthUserType) => {
     delete bike.createdBy;
     const {
-        location,
         email,
         username,
         user: { uid },
