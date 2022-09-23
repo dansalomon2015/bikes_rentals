@@ -1,20 +1,46 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { fireDB } from "libs/";
-import { BikeType, isAdmin, ReservationType } from "utils/";
+import { BikeType, isAdmin, RatingType, ReservationType } from "utils/";
 import { useAuth } from "./useAuth";
 
 interface Props {
     bike?: BikeType;
+    reservation?: ReservationType;
 }
 
-export const useStore = ({ bike }: Props) => {
+export const useStore = ({ bike, reservation }: Props) => {
     const { auth } = useAuth();
     const [bikes, setBikes] = useState<BikeType[]>([]);
     const [loadingBikes, setLoadingBikes] = useState(true);
     const [bikeResa, setBikeReservation] = useState<ReservationType[]>([]);
     const [reservations, setReservations] = useState<ReservationType[]>([]);
     const [loadingResa, setLoadingResa] = useState(true);
+    const [userRate, setUserRate] = useState<RatingType>();
+    const [bikeRating, setBikeRating] = useState(0);
+
+    useEffect(() => {
+        if (reservation) {
+            const rating_listener = onSnapshot(
+                query(
+                    collection(fireDB, "ratings"),
+                    where("bikeId", "==", reservation.bikeId),
+                    where("userId", "==", reservation.userId)
+                ),
+                (snapshot) => {
+                    let data: RatingType[] = [];
+                    snapshot.forEach((doc) => {
+                        data.push({ ...doc.data(), id: doc.id } as RatingType);
+                    });
+                    if (data.length) setUserRate(data[0]);
+                }
+            );
+
+            return () => {
+                rating_listener();
+            };
+        }
+    }, [reservation]);
 
     useEffect(() => {
         if (auth?.user) {
@@ -41,7 +67,7 @@ export const useStore = ({ bike }: Props) => {
 
     useEffect(() => {
         if (bike) {
-            const bikes_listener = onSnapshot(
+            const bike_reservations_listener = onSnapshot(
                 query(collection(fireDB, "reservations"), where("bikeId", "==", bike.id)),
                 (snapshot) => {
                     let data: ReservationType[] = [];
@@ -52,8 +78,21 @@ export const useStore = ({ bike }: Props) => {
                 }
             );
 
+            const bike_ratings_listener = onSnapshot(
+                query(collection(fireDB, "ratings"), where("bikeId", "==", bike.id)),
+                (snapshot) => {
+                    let data: RatingType[] = [];
+                    snapshot.forEach((doc) => {
+                        data.push({ ...doc.data(), id: doc.id } as RatingType);
+                    });
+                    if (!!data.length)
+                        setBikeRating(data.reduce((sum, rating) => (sum += rating.rating), 0) / data.length);
+                }
+            );
+
             return () => {
-                bikes_listener();
+                bike_reservations_listener();
+                bike_ratings_listener();
             };
         } else {
             setBikeReservation([]);
@@ -78,5 +117,5 @@ export const useStore = ({ bike }: Props) => {
         };
     }, []);
 
-    return { bikes, loadingBikes, bikeResa, reservations, loadingResa };
+    return { bikes, loadingBikes, bikeResa, reservations, loadingResa, userRate, bikeRating };
 };

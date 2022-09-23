@@ -10,7 +10,7 @@ import { Alert } from "./Alert";
 
 export const BikeCard: React.FC<{ bike: BikeType }> = ({ bike }) => {
     const { auth } = useAuth();
-    const { bikeResa } = useStore({ bike });
+    const { bikeResa, bikeRating } = useStore({ bike });
     const { model, color, location } = bike;
     const [calenVisible, setCalendarVisible] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ export const BikeCard: React.FC<{ bike: BikeType }> = ({ bike }) => {
                         </tr>
                         <tr>
                             <td>Rating :</td>
-                            <td>4.5 / 5</td>
+                            <td>{`${bikeRating > 0 ? bikeRating : "..."}`} / 5</td>
                         </tr>
                     </tbody>
                 </table>
@@ -96,14 +96,7 @@ export const BikeCard: React.FC<{ bike: BikeType }> = ({ bike }) => {
                     type="button"
                     onClick={() => setCalendarVisible(true)}
                 >
-                    Book
-                </button>
-
-                <button
-                    className=" ml-4 block text-black hover:text-white bg-yellow-400 hover:bg-gray-600 focus:ring-1 focus:outline-none focus:ring-gray-800 font-medium rounded-lg text-xs px-2 py-1 text-center"
-                    type="button"
-                >
-                    Rate
+                    Reserve this bike
                 </button>
             </div>
 

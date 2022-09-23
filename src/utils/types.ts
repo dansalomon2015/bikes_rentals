@@ -79,3 +79,10 @@ export type ReservationType = {
         username: string;
     };
 };
+
+export type RatingType = {
+    id?: string;
+    rating: number;
+    bikeId: string;
+    userId: string;
+};

@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { fireAuth, fireDB } from "libs/";
-import { AuthUserType, BikeType, LocationType, ReservationType, ROLE } from "utils/";
+import { AuthUserType, BikeType, LocationType, RatingType, ReservationType, ROLE } from "utils/";
 
 export const signUp = (email: string, password: string) => {
     return createUserWithEmailAndPassword(fireAuth, email, password);
@@ -120,4 +120,21 @@ export const addReservation = (bike: BikeType, startDate: string, endDate: strin
         },
     };
     return addDoc(collection(fireDB, "reservations"), resa);
+};
+
+export const saveBikeRating = (rate: RatingType) => {
+    const { id } = rate;
+
+    if (id) {
+        return setDoc(doc(fireDB, "ratings", id!), {
+            ...rate,
+            lastupdate: new Date().getTime(),
+        });
+    }
+
+    return addDoc(collection(fireDB, "ratings"), {
+        ...rate,
+        timestamp: new Date().getTime(),
+        lastupdate: new Date().getTime(),
+    });
 };
